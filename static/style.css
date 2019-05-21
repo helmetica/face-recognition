@@ -25,16 +25,27 @@ body {
     align-items: center;
 }
 
-.menu-item:hover {
+.menu-items a {
+    text-decoration: none;
+    color: #92999f;
+}
+
+.menu-item:hover, .menu-item.select:hover {
     background: #495965;
 }
 
+.menu-item.select {
+    background: #2e3e4a;
+}
+
 .menu-item-icon {
-    height: 24px;
+    height: 32px;
+    filter: invert(100%);
 }
 
 .menu-item-title {
-    margin-left: 12px;
+    margin-left: 24px;
+    font-size: 24px;
 }
 
 #page {
@@ -43,6 +54,105 @@ body {
     grid-template-rows: 62px auto;
 }
 
+.logo {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.logo-icon {
+    height: 28px;
+}
+
 .page-top {
     box-shadow: 0 0 8px #bdbcbc80;
+}
+
+.page-body {
+    background: #eaeaea;
+}
+
+.events-table {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+}
+
+.events-table-headers {
+    display: flex;
+    justify-content: space-around;
+}
+
+.event-info {
+    padding: 18px;
+    margin: 4px 18px;
+    display: grid;
+    background: white;
+    grid-template-columns: 11% 30% auto 10%;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.event-info-photo {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+
+.event-info-name {
+    display: flex;
+    flex-direction: column;
+}
+
+.event-info-datetime {
+    text-align: right;
+}
+
+.cameras-table {
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.camera-info {
+    padding: 18px;
+    background: white;
+    margin: 8px;
+}
+
+.camera-info-name {
+    color: #5085cc;
+    font-weight: bold;
+}
+
+.camera-info-title {
+    margin-bottom: 6px;
+    color: #5d5d6d;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.camera-info-description {
+    margin-top: 24px;
+}
+
+.faces-table {
+    margin-top: 8px;
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.face-info-photo {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+
+.face-info {
+    display: flex;
+    margin: 4px 18px;
+    padding: 18px;
+    background: white;
+}
+
+.face-info-name {
+    margin-left: 12px;
 }

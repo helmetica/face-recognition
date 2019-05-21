@@ -26,18 +26,34 @@ def get_events():
 
     return events_full
 
+def get_cameras():
+    cursor.execute('''SELECT cam.camera_id, cam.index, cam.camera_name, cam.camera_description 
+                    FROM cameras cam''')
+    cameras = cursor.fetchall()
+    cameras_full = []
+    
+    for (id, index, name, description) in cameras:
+        cam = {}
+        cam['id'] = id
+        cam['index'] = index
+        cam['name'] = name
+        cam['description'] = description
+        cameras_full.append(cam)
+
+    return cameras_full
+
 # получение данных из таблицы faces
 # мб передан id
 def get_faces(id):
-    query = 'SELECT face_id, name, lastname, fathername, group_id, photo_path FROM faces'
+    query = 'SELECT face_id, name, lastname, fathername, group_id, photo_path, last_detection FROM faces'
     if id is not None:
-        query += 'WHERE face_id={0}'.format(id)
+        query += ' WHERE face_id={0}'.format(id)
         
     cursor.execute(query)
     faces = cursor.fetchall()
     faces_full = []
 
-    for (face_id, name, lastname, fathername, group_id, photo_path) in faces:
+    for (face_id, name, lastname, fathername, group_id, photo_path, last_detection) in faces:
         face = {}
         face['face_id'] = face_id
         face['name'] = name
@@ -45,6 +61,21 @@ def get_faces(id):
         face['fathername'] = fathername
         face['group_id'] = group_id
         face['photo_path'] = photo_path
+        face['last_detection'] = last_detection
         faces_full.append(face)
 
     return faces_full
+
+def update_last_detection(id, last_detection):
+    query = """ UPDATE faces
+                SET last_detection = %s
+                WHERE face_id = %s"""
+    updated_rows = 0
+    try:
+        cursor.execute(query, (last_detection, id))
+        conn.commit()
+        updated_rows = 1
+    except:
+        print('DB update err')
+
+    return updated_rows
