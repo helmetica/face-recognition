@@ -20,15 +20,15 @@ COUNT_FRAME_WITH_DATA = 50
 FRAME_HEIGHT = 120
 FRAME_WIDTH = 160
 FRAME_FPS = 30
-TIME_DETECTION = 2 # обновлять время последней детекции каждые 10 мин
+TIME_DETECTION = 0.5 # обновлять время последней детекции каждые N мин
 
 def StartWebServer(qI, port=5000):
     app = Flask(__name__)
-    app.config.from_object(__name__)
+    # app.config.from_object(__name__)
 
     # Flask-CORS нужен для отправки cross-origin-запросов (запросы, исходящие из другого протокола, IP-адреса, 
     # имени домена или порта), поэтому необходимо включить общий доступ к ресурсам (CORS).
-    CORS(app) # enable CORS
+    CORS(app)
 
     def eventStream():
         while True:
@@ -44,21 +44,25 @@ def StartWebServer(qI, port=5000):
         return json.dumps(cameras, default=str)
     
     def getFaces():
-        faces = db_helper.get_faces(None)
-        print(faces)
+        faces = db_helper.get_faces()
         return json.dumps(faces, default=str)
 
     @app.route("/events_data")
     def events_data():
-        return Response(getEvents())
+        return Response(getEvents(), mimetype="text/event-stream")
+
+    @app.route("/events_clear")
+    def events_clear():
+        db_helper.clear_events()
+        return ''
 
     @app.route("/cameras_data")
     def cameras_data():
-        return Response(getCameras())
+        return Response(getCameras(), mimetype="text/event-stream")
 
     @app.route("/faces_data")
     def faces_data():
-        return Response(getFaces())
+        return Response(getFaces(), mimetype="text/event-stream")
 
     @app.route("/stream")
     def stream():
@@ -70,7 +74,6 @@ def StartWebServer(qI, port=5000):
 
     @app.route("/events")
     def events():
-        print('evnet')
         return render_template('events.html')
 
     @app.route("/cameras")
@@ -84,7 +87,7 @@ def StartWebServer(qI, port=5000):
     app.run("", port)
     app.debug = True
 
-def CheckFace(cap, qI, window_name, count_frame):
+def CheckFace(cap, qI, camera, count_frame):
     i = 0
     while True:
         ret, img = cap.read()
@@ -92,9 +95,9 @@ def CheckFace(cap, qI, window_name, count_frame):
         faces = detector.detectMultiScale(gray, 1.3, 5)
         for (x, y, w, h) in faces:
             cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
-        cv2.imshow(window_name, img)
+        cv2.imshow(camera['name'], img)
         if i % count_frame == 0:
-            qI.put({'window_name': window_name, 'frame': img})
+            qI.put({'camera_name': camera['name'], 'camera_id': camera['id'], 'frame': img})
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         i += 1
@@ -103,7 +106,9 @@ def CheckFace(cap, qI, window_name, count_frame):
 
 
 def FullRecognizedFace(qI, qO):
-    faces = db_helper.get_faces(None)
+    faces = db_helper.get_faces()
+
+    print(faces)
 
     # Загружаем все знакомые лица
     known_face_encodings = []
@@ -123,7 +128,8 @@ def FullRecognizedFace(qI, qO):
     i = 0
     while True:
         data_frame = qI.get()
-        window_name = data_frame.get('window_name')
+        camera_name = data_frame.get('camera_name')
+        camera_id = data_frame.get('camera_id')
         frame = data_frame.get('frame')
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
         rgb_small_frame = small_frame[:, :, ::-1]
@@ -141,9 +147,6 @@ def FullRecognizedFace(qI, qO):
             if face_id is not None:
                 face_info = db_helper.get_faces(face_id)[0]
 
-                new_person = dict()
-                new_person['name'] = face_info['name']
-
                 try:
                     img_data = open(face_info['photo_path'], 'rb' ).read()
                     img_data = "data:image/png;base64," + base64.b64encode(img_data).decode()
@@ -157,15 +160,16 @@ def FullRecognizedFace(qI, qO):
                 print('compare last detec: ' + str(minutes_passed))
 
                 if minutes_passed > TIME_DETECTION:
+                    # обновить время последней детекции
                     db_helper.update_last_detection(face_info['face_id'], time_detection)
 
-                    new_person['photo'] = img_data
-                    new_person['time'] = str(time_detection)
-                    new_person['cam'] = window_name
-                    # new_person['isUnknown'] = 'item isUnknown' if face_id == 'Unknown' else 'item'
+                    face_info['datetime'] = time_detection
+                    face_info['camera'] = camera_name
 
-                    new_person_j = json.dumps(new_person)
-                    print(new_person['name'])
+                    new_person_j = json.dumps(face_info, default=str)
+                    print(face_info['name'])
+
+                    db_helper.insert_new_event(camera_id, face_info['face_id']) # брать камеры из БД
 
                     qO.put(new_person_j)
                 else:
@@ -182,6 +186,18 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 
 # TODO: сделать получение камер из БД
 
+cameras = db_helper.get_cameras()
+
+# for c in cameras:
+#     cam = cv2.VideoCapture(c['index'])
+#     cam.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
+#     cam.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
+#     cam.set(cv2.CAP_PROP_FPS, FRAME_FPS)
+#     prc = multiprocessing.Process(target=CheckFace, args=(cam, queueImg, c, COUNT_FRAME_WITH_DATA,))
+#     prc.start()
+#     print(c['name'])
+#     print(prc.pid)
+
 # запуск входной камеры
 # entry_camera = cv2.VideoCapture(2)
 # entry_camera.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
@@ -193,18 +209,22 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 # print(prc.pid)
 
 # запуск выходной камеры
-exit_camera = cv2.VideoCapture(0)
-exit_camera.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
-exit_camera.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
-exit_camera.set(cv2.CAP_PROP_FPS, FRAME_FPS)
-prc1 = multiprocessing.Process(target=CheckFace, args=(exit_camera, queueImg, 'Exit camera', COUNT_FRAME_WITH_DATA,))
-prc1.start()
-print('cam2')
-print(prc1.pid)
+
+# cam = {}
+# cam['id'] = 1
+# cam['name'] = 'Камера 1'
+# exit_camera = cv2.VideoCapture(0)
+# exit_camera.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
+# exit_camera.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
+# exit_camera.set(cv2.CAP_PROP_FPS, FRAME_FPS)
+# prc1 = multiprocessing.Process(target=CheckFace, args=(exit_camera, queueImg, cam, COUNT_FRAME_WITH_DATA,))
+# prc1.start()
+# print('cam2')
+# print(prc1.pid)
 
 # запуск сервера
 prc2 = multiprocessing.Process(target=StartWebServer, args=(queueToSend, ))
 prc2.start()
 print(prc2.pid)
 
-FullRecognizedFace(queueImg, queueToSend)
+# FullRecognizedFace(queueImg, queueToSend)

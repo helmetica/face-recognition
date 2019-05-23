@@ -20,6 +20,12 @@ var app = new Vue({
       var date = new Date(value);
       return appendLeadingZeroes(date.getDate()) + '.' + appendLeadingZeroes((date.getMonth() + 1)) + '.' + appendLeadingZeroes(date.getFullYear());
     },
+  },
+  methods: {
+    clearAll: function(event) {
+      app.items = [];
+      fetch('/events_clear');
+    }
   }
 });
 

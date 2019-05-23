@@ -34,7 +34,11 @@
 		</div>
 		<div id="page">
 			<div class="page-top">
-
+				<button type="button" class="page-top-btn" v-on:click="openFaceEditor">Добавить</button>
+				<div id="faceEditor">
+					<span>here</span>
+					<button type="button" class="page-top-btn" v-on:click="uploadPhoto">Загрузить фото</button>
+				</div>
 			</div>
 			<div class="page-body">
 				<div class="faces-table">
