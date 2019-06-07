@@ -173,9 +173,9 @@ def FullRecognizedFace(qI, qO):
 
                     qO.put(new_person_j)
                 else:
-                    print('PASS')
+                    print('pass')
             else:
-                print('Unknown')
+                print('unknown')
         i += 1
 
 queueImg = multiprocessing.Queue()
@@ -198,7 +198,7 @@ cameras = db_helper.get_cameras()
 #     print(c['name'])
 #     print(prc.pid)
 
-# запуск входной камеры
+# запуск камеры 2
 # entry_camera = cv2.VideoCapture(2)
 # entry_camera.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
 # entry_camera.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
@@ -208,23 +208,23 @@ cameras = db_helper.get_cameras()
 # print('cam1')
 # print(prc.pid)
 
-# запуск выходной камеры
+# запуск камеры 1
 
-# cam = {}
-# cam['id'] = 1
-# cam['name'] = 'Камера 1'
-# exit_camera = cv2.VideoCapture(0)
-# exit_camera.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
-# exit_camera.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
-# exit_camera.set(cv2.CAP_PROP_FPS, FRAME_FPS)
-# prc1 = multiprocessing.Process(target=CheckFace, args=(exit_camera, queueImg, cam, COUNT_FRAME_WITH_DATA,))
-# prc1.start()
-# print('cam2')
-# print(prc1.pid)
+cam = {}
+cam['id'] = 1
+cam['name'] = 'Камера 1'
+exit_camera = cv2.VideoCapture(0)
+exit_camera.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
+exit_camera.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
+exit_camera.set(cv2.CAP_PROP_FPS, FRAME_FPS)
+prc1 = multiprocessing.Process(target=CheckFace, args=(exit_camera, queueImg, cam, COUNT_FRAME_WITH_DATA,))
+prc1.start()
+print('cam2')
+print(prc1.pid)
 
 # запуск сервера
 prc2 = multiprocessing.Process(target=StartWebServer, args=(queueToSend, ))
 prc2.start()
 print(prc2.pid)
 
-# FullRecognizedFace(queueImg, queueToSend)
+FullRecognizedFace(queueImg, queueToSend)

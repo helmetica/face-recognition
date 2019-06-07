@@ -34,10 +34,38 @@
 		</div>
 		<div id="page">
 			<div class="page-top">
-				<button type="button" class="page-top-btn" v-on:click="openFaceEditor">Добавить</button>
+				<button type="button" class="page-top-btn" v-on:click="toogleFaceEditor">Добавить</button>
 				<div id="faceEditor">
-					<span>here</span>
-					<button type="button" class="page-top-btn" v-on:click="uploadPhoto">Загрузить фото</button>
+					<div class="faceEditor-content">
+						<div class="faceEditor-header">
+							<div class="faceEditor-caption">Добавление лица для распознавания</div>
+							<div class="faceEditor-close" v-on:click="toogleFaceEditor">x</div>
+						</div>
+						<div class="faceEditor-body">
+							<div class="faceEditor-body-photoColumn">
+								<img src="../static/img/avatar.png" id="upload-photo" alt="image" />
+								<button id="uploadPhotoBtn" type="button" class="page-top-btn" v-on:click="uploadPhoto">Загрузить</button>
+								<input id="file-input" type="file" name="name" style="display: none;" />
+							</div>
+							<div class="faceEditor-body-infoColumn">
+								<div>
+									<div class="faceEditor-body-infoColumn-row">
+										<div class="faceEditor-body-infoColumn-row-title">Фамилия</div>
+										<input id="input-lastname" type="text">
+									</div>
+									<div class="faceEditor-body-infoColumn-row">
+										<div class="faceEditor-body-infoColumn-row-title">Имя</div>
+										<input id="input-name" type="text">
+									</div>
+									<div class="faceEditor-body-infoColumn-row">
+										<div class="faceEditor-body-infoColumn-row-title">Отчество</div>
+										<input id="input-fathername" type="text">
+									</div>
+								</div>
+								<button id="saveBtn" type="button" class="page-top-btn" v-on:click="save" style="display: none;">Сохранить</button>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="page-body">
@@ -55,6 +83,7 @@
 		</div>
 	</div>
 
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <script type="text/javascript" src="../static/vue.js"></script>
 <script type="text/javascript" src="../static/faces.js"></script>
 

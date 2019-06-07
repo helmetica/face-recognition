@@ -181,12 +181,73 @@ body {
 
 #faceEditor {
     display: none;
-
+    overflow: hidden;
     position: fixed;
     top: calc(50% - 150px);
     left: calc(50% - 250px);
     background: white;
-    width: 500px;
-    height: 300px;
+    width: 600px;
+    height: 320px;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.faceEditor-content {
+    height: calc(100% - 24px);
+    padding: 12px;
+}
+
+.faceEditor-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.faceEditor-body {
+    height: calc(100% - 48px);
+    display: flex;
+    padding: 12px;
+}
+
+.faceEditor-body-photoColumn {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.faceEditor-body-photoColumn .page-top-btn {
+    margin: unset;
+}
+
+.faceEditor-body-infoColumn {
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.faceEditor-body-infoColumn-row {
+    margin-bottom: 12px;
+}
+
+.faceEditor-body-infoColumn-row-title {
+    color: #4a4a4a;
+}
+
+.faceEditor-caption {
+    color: #698eab;
+    font-weight: bold;
+}
+
+.faceEditor-close {
+    color: gray;
+    font-weight: bold;
+    font-family: sans-serif;
+    font-size: 24px;
+    margin-right: 6px;
+    cursor: pointer;
+}
+
+#upload-photo {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
 }
