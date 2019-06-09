@@ -92,12 +92,16 @@ body {
 
 .page-body {
     background: #eaeaea;
+    height: calc(100vh - 68px);
+    overflow: hidden;
 }
 
 .events-table {
     display: flex;
     flex-direction: column;
     margin-top: 8px;
+    overflow: overlay;
+    height: calc(100vh - 84px);
 }
 
 .events-table-headers {
@@ -114,15 +118,24 @@ body {
     border-bottom: 1px solid #e0e0e0;
 }
 
+.event-info.event-info-unknown {
+    background: #ff36364d;
+}
+
 .event-info-photo {
     width: 150px;
     height: 150px;
     object-fit: cover;
 }
 
+.event-info-photo-container {
+    overflow: hidden;
+}
+
 .event-info-name {
     display: flex;
     flex-direction: column;
+    padding: 0 6px;
 }
 
 .event-info-datetime {
@@ -160,6 +173,10 @@ body {
     margin-top: 8px;
     display: grid;
     grid-template-columns: 50% 50%;
+    overflow: overlay;
+    height: 100vh;
+    align-content: start;
+    height: calc(100vh - 80px);
 }
 
 .face-info-photo {
@@ -173,6 +190,7 @@ body {
     margin: 4px 18px;
     padding: 18px;
     background: white;
+    height: 154px;
 }
 
 .face-info-name {

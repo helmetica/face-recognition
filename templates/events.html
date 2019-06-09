@@ -39,8 +39,10 @@
 			</div>
 			<div class="page-body">
 				<div class="events-table">
-					<div v-for="item in items" class="event-info">
-						<img v-bind:src="item.photo_path" class="event-info-photo">
+					<div v-for="item in items" :class="['event-info', item.is_unknown ? 'event-info-unknown' : '']">
+						<div class="event-info-photo-container">
+							<img v-bind:src="item.photo_path" class="event-info-photo">
+						</div>
 						<div class="event-info-name">
 							<span>[[ item.lastname ]]</span>
 							<span>[[ item.name ]]</span>

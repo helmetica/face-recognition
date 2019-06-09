@@ -19,7 +19,7 @@ var app = new Vue({
     getDate: function (value) {
       var date = new Date(value);
       return appendLeadingZeroes(date.getDate()) + '.' + appendLeadingZeroes((date.getMonth() + 1)) + '.' + appendLeadingZeroes(date.getFullYear());
-    },
+    }
   },
   methods: {
     clearAll: function(event) {
