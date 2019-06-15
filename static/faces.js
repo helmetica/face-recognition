@@ -68,7 +68,7 @@ var app = new Vue({
                                 i = index;
                             }
                         })
-                        if (i) {
+                        if (i || i === 0) {
                             app.items.splice(i, 1);
                         }
                     }

@@ -49,9 +49,12 @@
 							<span>[[ item.fathername ]]</span>
 						</div>
 						<div class="event-info-camera">[[ item.camera ]]</div>
-						<div class="event-info-datetime">
-							<div class="event-info-date">[[ item.datetime | getDate ]]</div>
-							<div class="event-info-time">[[ item.datetime | getTime ]]</div>
+						<div class="event-info-lastcolumn">
+							<div class="event-info-datetime">
+								<div class="event-info-date">[[ item.datetime | getDate ]]</div>
+								<div class="event-info-time">[[ item.datetime | getTime ]]</div>
+							</div>
+							<div title="Удалить" class="event-info-delete" v-on:click="deleteEventById([[ item.event_id ]])">Удалить</div>
 						</div>
 					</div>
 				</div>

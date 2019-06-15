@@ -25,6 +25,36 @@ var app = new Vue({
     clearAll: function(event) {
       app.items = [];
       fetch('/events_clear');
+    },
+    deleteEventById: function(data) {
+      var ids = data && data[0];
+      if (ids && ids[0]) {
+          var id = ids[0],
+              body_json = JSON.stringify({event_id: id});
+
+          fetch('/delete_event', {
+              method: 'post',  
+              headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+              }, 
+              body: body_json
+          }).then(responce => {
+              return responce.text();
+          }).then(data => {  
+              if (data) {
+                  var i = null;
+                  app.items.forEach((item, index) => { 
+                      if (item['event_id'] === id) {
+                          i = index;
+                      }
+                  });
+                  if (i || i === 0) {
+                      app.items.splice(i, 1);
+                  }
+              }
+          });
+      }
     }
   }
 });

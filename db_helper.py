@@ -140,6 +140,17 @@ def delete_face(id):
     cursor.close()
     conn.close()
 
+def delete_event(id):
+    conn = psycopg2.connect(dbname='FRDB', user='postgres', password='qwerty', host='localhost')
+    cursor = conn.cursor()
+
+    if id:
+        cursor.execute('''DELETE FROM events WHERE event_id=''' + str(id))
+        conn.commit()
+   
+    cursor.close()
+    conn.close()
+
 
 def insert_new_event(camera_id, face_id):
     conn = psycopg2.connect(dbname='FRDB', user='postgres', password='qwerty', host='localhost')

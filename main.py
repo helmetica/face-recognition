@@ -105,6 +105,13 @@ def StartWebServer(qI, port=5000):
     def index():
         return redirect("/events", code=302)
 
+    @app.route("/delete_event", methods=["POST"])
+    def delete_event(*args, **kwargs):
+        data = request.json
+        id = data['event_id']
+        db_helper.delete_event(id)
+        return str(True)
+
     @app.route("/events")
     def events():
         return render_template('events.html')
