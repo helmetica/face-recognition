@@ -191,10 +191,31 @@ body {
     padding: 18px;
     background: white;
     height: 154px;
+    justify-content: space-between;
+}
+
+.face-info-content {
+    display: flex;
 }
 
 .face-info-name {
     margin-left: 12px;
+}
+
+.face-info-delete {
+    color: #ff5151;
+    cursor: pointer;
+    display: none;
+    align-items: flex-end;
+    font-size: 16px;
+}
+
+.face-info-delete:hover {
+    text-decoration-line: underline;
+}
+
+.face-info:hover .face-info-delete {
+    display: flex;
 }
 
 #faceEditor {
@@ -228,7 +249,7 @@ body {
 .faceEditor-body-photoColumn {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    /* justify-content: space-between; */
 }
 
 .faceEditor-body-photoColumn .page-top-btn {
@@ -262,6 +283,22 @@ body {
     font-size: 24px;
     margin-right: 6px;
     cursor: pointer;
+}
+
+.faceEditor-upload {
+    border: none;
+    height: 34px;
+    background: unset;
+    text-decoration: underline;
+    color: #31546f;
+}
+
+.faceEditor-upload:focus {
+    outline: none;
+}
+
+.faceEditor-upload:hover {
+    color: #5a89ad;
 }
 
 #upload-photo {

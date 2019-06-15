@@ -37,46 +37,51 @@
 				<button type="button" class="page-top-btn" v-on:click="toogleFaceEditor">Добавить</button>
 				<div id="faceEditor">
 					<div class="faceEditor-content">
-						<div class="faceEditor-header">
-							<div class="faceEditor-caption">Добавление лица для распознавания</div>
-							<div class="faceEditor-close" v-on:click="toogleFaceEditor">x</div>
-						</div>
-						<div class="faceEditor-body">
-							<div class="faceEditor-body-photoColumn">
-								<img src="../static/img/avatar.png" id="upload-photo" alt="image" />
-								<button id="uploadPhotoBtn" type="button" class="page-top-btn" v-on:click="uploadPhoto">Загрузить</button>
-								<input id="file-input" type="file" name="name" style="display: none;" />
+						<form action="/save_face" method="POST" enctype="multipart/form-data" style="height: 100%;">
+							<div class="faceEditor-header">
+								<div class="faceEditor-caption">Добавление лица для распознавания</div>
+								<div class="faceEditor-close" v-on:click="toogleFaceEditor">x</div>
 							</div>
-							<div class="faceEditor-body-infoColumn">
-								<div>
-									<div class="faceEditor-body-infoColumn-row">
-										<div class="faceEditor-body-infoColumn-row-title">Фамилия</div>
-										<input id="input-lastname" type="text">
-									</div>
-									<div class="faceEditor-body-infoColumn-row">
-										<div class="faceEditor-body-infoColumn-row-title">Имя</div>
-										<input id="input-name" type="text">
-									</div>
-									<div class="faceEditor-body-infoColumn-row">
-										<div class="faceEditor-body-infoColumn-row-title">Отчество</div>
-										<input id="input-fathername" type="text">
-									</div>
+							<div class="faceEditor-body">
+								<div class="faceEditor-body-photoColumn">
+									<img src="../static/img/avatar.png" id="upload-photo" alt="image" />
+									<button id="uploadPhotoBtn" type="button" class="faceEditor-upload" v-on:click="uploadPhoto">Выбрать файл</button>
+									<input id="file-input" type="file" name="photo" style="display: none;" />
 								</div>
-								<button id="saveBtn" type="button" class="page-top-btn" v-on:click="save" style="display: none;">Сохранить</button>
+								<div class="faceEditor-body-infoColumn">
+									<div>
+										<div class="faceEditor-body-infoColumn-row">
+											<div class="faceEditor-body-infoColumn-row-title">Фамилия</div>
+											<input id="input-lastname" type="text" name="lastname">
+										</div>
+										<div class="faceEditor-body-infoColumn-row">
+											<div class="faceEditor-body-infoColumn-row-title">Имя</div>
+											<input id="input-name" type="text" name="name">
+										</div>
+										<div class="faceEditor-body-infoColumn-row">
+											<div class="faceEditor-body-infoColumn-row-title">Отчество</div>
+											<input id="input-fathername" type="text" name="fathername">
+										</div>
+									</div>
+									<button id="saveBtn" type="submit" class="page-top-btn" v-on:click="save">Сохранить</button>
+								</div>
 							</div>
-						</div>
+						</form>
 					</div>
 				</div>
 			</div>
 			<div class="page-body">
 				<div class="faces-table">
 					<div v-for="item in items" class="face-info">
-                        <img v-bind:src="item.photo_path" class="face-info-photo">
-                        <div class="face-info-name">
-                            <div>[[ item.lastname ]]</div>
-                            <div>[[ item.name ]]</div>
-                            <div>[[ item.fathername ]]</div>
-                        </div>
+						<div class="face-info-content">
+							<img v-bind:src="item.photo_path" class="face-info-photo">
+							<div class="face-info-name">
+								<div>[[ item.lastname ]]</div>
+								<div>[[ item.name ]]</div>
+								<div>[[ item.fathername ]]</div>
+							</div>
+						</div>
+						<a title="Удалить" class="face-info-delete" v-on:click="deleteFaceById([[ item.face_id ]])">Удалить</a>
 					</div>
 				</div>
 			</div>

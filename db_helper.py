@@ -129,6 +129,18 @@ def insert_new_face(is_unknown, photo_path, name='', lastname='', fathername='')
     return id_new_face
 
 
+def delete_face(id):
+    conn = psycopg2.connect(dbname='FRDB', user='postgres', password='qwerty', host='localhost')
+    cursor = conn.cursor()
+
+    if id:
+        cursor.execute('''DELETE FROM faces WHERE face_id=''' + str(id))
+        conn.commit()
+   
+    cursor.close()
+    conn.close()
+
+
 def insert_new_event(camera_id, face_id):
     conn = psycopg2.connect(dbname='FRDB', user='postgres', password='qwerty', host='localhost')
     cursor = conn.cursor()

@@ -17,7 +17,7 @@ var app = new Vue({
 
                 $('#upload-photo').attr('src', '../static/img/avatar.png');
                 document.getElementById('uploadPhotoBtn').style.display = 'block';
-                document.getElementById('saveBtn').style.display = 'none';
+                // document.getElementById('saveBtn').style.display = 'none';
                 document.getElementById('input-lastname').value = '';
                 document.getElementById('input-name').value = '';
                 document.getElementById('input-fathername').value = '';
@@ -35,8 +35,8 @@ var app = new Vue({
                         $('#upload-photo').attr('src', e.target.result);
                     });
                     reader.readAsDataURL(file);
-                    document.getElementById('uploadPhotoBtn').style.display = 'none';
-                    document.getElementById('saveBtn').style.display = 'block';
+                    // document.getElementById('uploadPhotoBtn').style.display = 'none';
+                    // document.getElementById('saveBtn').style.display = 'block';
                 }
             }
 
@@ -44,6 +44,36 @@ var app = new Vue({
         },
         save: function(event) {
 
+        },
+        deleteFaceById: function(data) {
+            var ids = data && data[0];
+            if (ids && ids[0]) {
+                var id = ids[0],
+                    body_json = JSON.stringify({face_id: id});
+
+                fetch('/delete_face', {
+                    method: 'post',  
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }, 
+                    body: body_json
+                }).then(responce => {
+                    return responce.text();
+                }).then(data => {  
+                    if (data) {
+                        var i = null;
+                        app.items.forEach((item, index) => { 
+                            if (item['face_id'] === id) {
+                                i = index;
+                            }
+                        })
+                        if (i) {
+                            app.items.splice(i, 1);
+                        }
+                    }
+                });
+            }
         }
     },
 });

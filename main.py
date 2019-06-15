@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+#import magic
 import os
 import cv2
 import time
@@ -9,6 +10,7 @@ import face_recognition
 import json
 import base64
 from flask import Flask, make_response, Response, request, render_template, redirect
+from werkzeug.utils import secure_filename
 from flask_cors import CORS
 
 import db_helper
@@ -16,6 +18,7 @@ import db_helper
 # configuration
 DEBUG = True
 
+FACES_DB = db_helper.get_faces(None, False)
 COUNT_FRAME_WITH_DATA = 50
 FRAME_HEIGHT = 120
 FRAME_WIDTH = 160
@@ -65,6 +68,35 @@ def StartWebServer(qI, port=5000):
     def faces_data():
         return Response(getFaces(), mimetype="text/event-stream")
 
+    @app.route("/save_face", methods=["POST"])
+    def save_face():
+        name = request.form['name']
+        lastname = request.form['lastname']
+        fathername = request.form['fathername']
+        photofile = request.files['photo']
+        print(request.form)
+        print(photofile)
+
+        if photofile and name and lastname:
+            time_adding = datetime.datetime.now()
+            relative_path = 'static/DataSet/'
+            directory = os.getcwd() + '/' + relative_path
+            file_name = name + '_' + lastname + '_' + str(time_adding)
+            photofile.save(directory + file_name)
+            added_id = db_helper.insert_new_face(False, relative_path + file_name, name, lastname, fathername)
+            if added_id:
+                print('ADDED')
+            return redirect("/faces", code=302)
+        else:
+            return 'ERROR'
+
+    @app.route("/delete_face", methods=["POST"])
+    def delete_face(*args, **kwargs):
+        data = request.json
+        id = data['face_id']
+        db_helper.delete_face(id)
+        return str(True)
+
     @app.route("/stream")
     def stream():
         return Response(eventStream(), mimetype="text/event-stream")
@@ -107,17 +139,15 @@ def CheckFace(cap, qI, camera, count_frame):
 
 
 def FullRecognizedFace(qI, qO):
-    faces = db_helper.get_faces(None, False)
+    # faces = db_helper.get_faces(None, False)
     LAST_TIME_DETECTION_UNKNOWN = datetime.datetime.now()
-
-    print(faces)
 
     # Загружаем все знакомые лица
     known_face_encodings = []
     known_face_ids = []
     directory = os.getcwd() + '/'
 
-    for face in faces:
+    for face in FACES_DB:
         print(face['photo_path'])
         path_to_image = directory + face['photo_path']
         image = face_recognition.load_image_file(path_to_image)
