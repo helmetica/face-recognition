@@ -9,7 +9,8 @@ var app = new Vue({
   el: '#app',
   delimiters: ['[[', ']]'],
   data: {
-    items: []  
+    items: [],
+    show_only_unknown: false
   },
   filters: {
     getTime: function (value) {

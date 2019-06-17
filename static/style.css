@@ -82,6 +82,10 @@ body {
     border-radius: 6px;
 }
 
+.page-top-filter {
+    margin-left: 24px;
+}
+
 .page-top-btn:hover {
     background: #8f999f;
 }
@@ -116,6 +120,10 @@ body {
     background: white;
     grid-template-columns: 11% 30% auto 10%;
     border-bottom: 1px solid #e0e0e0;
+}
+
+.event-info-hidden {
+    display: none;
 }
 
 .event-info.event-info-unknown {

@@ -18,7 +18,6 @@ import db_helper
 # configuration
 DEBUG = True
 
-FACES_DB = db_helper.get_faces(None, False)
 COUNT_FRAME_WITH_DATA = 50
 FRAME_HEIGHT = 120
 FRAME_WIDTH = 160
@@ -81,9 +80,11 @@ def StartWebServer(qI, port=5000):
             time_adding = datetime.datetime.now()
             relative_path = 'static/DataSet/'
             directory = os.getcwd() + '/' + relative_path
-            file_name = name + '_' + lastname + '_' + str(time_adding)
-            photofile.save(directory + file_name)
-            added_id = db_helper.insert_new_face(False, relative_path + file_name, name, lastname, fathername)
+            file_name = name + '_' + lastname + '_' + str(time_adding) + '.jpg'
+            full_path = directory + file_name
+            photo_path = relative_path + file_name
+            photofile.save(full_path)
+            added_id = db_helper.insert_new_face(False, photo_path, name, lastname, fathername)
             if added_id:
                 print('ADDED')
             return redirect("/faces", code=302)
@@ -150,23 +151,40 @@ def FullRecognizedFace(qI, qO):
     LAST_TIME_DETECTION_UNKNOWN = datetime.datetime.now()
 
     # Загружаем все знакомые лица
-    known_face_encodings = []
-    known_face_ids = []
-    directory = os.getcwd() + '/'
+    # known_face_encodings = []
+    # known_face_ids = []
+    # directory = os.getcwd() + '/'
 
-    for face in FACES_DB:
-        print(face['photo_path'])
-        path_to_image = directory + face['photo_path']
-        image = face_recognition.load_image_file(path_to_image)
-        encoding = face_recognition.face_encodings(image)
-        if len(encoding) > 0:
-            face_encoding = encoding[0]
-            known_face_encodings.append(face_encoding)
-            known_face_ids.append(face['face_id'])
+    # for face in faces:
+    #     print(face['photo_path'])
+    #     path_to_image = directory + face['photo_path']
+    #     image = face_recognition.load_image_file(path_to_image)
+    #     encoding = face_recognition.face_encodings(image)
+    #     if len(encoding) > 0:
+    #         face_encoding = encoding[0]
+    #         known_face_encodings.append(face_encoding)
+    #         known_face_ids.append(face['face_id'])
 
     i = 0
     while True:
         data_frame = qI.get()
+
+        # Загружаем все знакомые лица
+        faces = db_helper.get_faces(None, False)
+        known_face_encodings = []
+        known_face_ids = []
+        directory = os.getcwd() + '/'
+
+        for face in faces:
+            print(face['photo_path'])
+            path_to_image = directory + face['photo_path']
+            image = face_recognition.load_image_file(path_to_image)
+            encoding = face_recognition.face_encodings(image)
+            if len(encoding) > 0:
+                face_encoding = encoding[0]
+                known_face_encodings.append(face_encoding)
+                known_face_ids.append(face['face_id'])
+
         camera_name = data_frame.get('camera_name')
         camera_id = data_frame.get('camera_id')
         frame = data_frame.get('frame')
@@ -304,7 +322,7 @@ cameras = db_helper.get_cameras()
 # print(prc1.pid)
 
 # запуск сервера
-prc2 = multiprocessing.Process(target=StartWebServer, args=(queueToSend, ))
+prc2 = multiprocessing.Process(target=StartWebServer, args=(queueToSend,))
 prc2.start()
 print(prc2.pid)
 

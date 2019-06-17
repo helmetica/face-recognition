@@ -36,10 +36,14 @@
 		<div id="page">
 			<div class="page-top">
 				<button type="button" class="page-top-btn" v-on:click="clearAll">Очистить</button>
+				<div class="page-top-filter">
+					<input type="checkbox" id="filter" v-model="show_only_unknown">
+					<label for="filter">Показывать только нераспознанных</label>
+				</div>
 			</div>
 			<div class="page-body">
 				<div class="events-table">
-					<div v-for="item in items" :class="['event-info', item.is_unknown ? 'event-info-unknown' : '']">
+					<div v-for="item in items" :class="['event-info', item.is_unknown ? 'event-info-unknown' : '', (show_only_unknown && item.is_unknown) || !show_only_unknown ? '' : 'event-info-hidden']">
 						<div class="event-info-photo-container">
 							<img v-bind:src="item.photo_path" class="event-info-photo">
 						</div>
