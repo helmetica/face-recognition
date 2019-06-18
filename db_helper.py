@@ -1,9 +1,13 @@
 import psycopg2
 
+DBNAME = 'FRDB'
+USER = 'postgres'
+PASSWORD = 'qwerty'
+
 # получение списка событий
 def get_events():
     # подключение к БД
-    conn = psycopg2.connect(dbname='FRDB', user='postgres', password='qwerty', host='localhost')
+    conn = psycopg2.connect(dbname=DBNAME, user=USER, password=PASSWORD, host='localhost')
     cursor = conn.cursor()
 
     cursor.execute('''SELECT ev.event_id, ev.datetime, cam.camera_name, f.name, f.lastname, f.fathername, f.photo_path, f.is_unknown 
@@ -33,7 +37,7 @@ def get_events():
 
 # очистка списка событий
 def clear_events():
-    conn = psycopg2.connect(dbname='FRDB', user='postgres', password='qwerty', host='localhost')
+    conn = psycopg2.connect(dbname=DBNAME, user=USER, password=PASSWORD, host='localhost')
     cursor = conn.cursor()
 
     cursor.execute('DELETE FROM events')  
@@ -44,7 +48,7 @@ def clear_events():
 
 def get_cameras(id=None):
     # подключение к БД
-    conn = psycopg2.connect(dbname='FRDB', user='postgres', password='qwerty', host='localhost')
+    conn = psycopg2.connect(dbname=DBNAME, user=USER, password=PASSWORD, host='localhost')
     cursor = conn.cursor()
 
     query = '''SELECT camera_id, index, camera_name, camera_description 
@@ -74,7 +78,7 @@ def get_cameras(id=None):
 # мб передан id, флаг получения только известных/неизвестных/всех
 def get_faces(id=None, get_unknown=None):
     # подключение к БД
-    conn = psycopg2.connect(dbname='FRDB', user='postgres', password='qwerty', host='localhost')
+    conn = psycopg2.connect(dbname=DBNAME, user=USER, password=PASSWORD, host='localhost')
     cursor = conn.cursor()
 
     query = 'SELECT face_id, name, lastname, fathername, group_id, photo_path, last_detection, is_unknown FROM faces'
@@ -108,7 +112,7 @@ def get_faces(id=None, get_unknown=None):
     return faces_full
 
 def insert_new_face(is_unknown, photo_path, name='', lastname='', fathername=''):
-    conn = psycopg2.connect(dbname='FRDB', user='postgres', password='qwerty', host='localhost')
+    conn = psycopg2.connect(dbname=DBNAME, user=USER, password=PASSWORD, host='localhost')
     cursor = conn.cursor()
     id_new_face = None
 
@@ -130,7 +134,7 @@ def insert_new_face(is_unknown, photo_path, name='', lastname='', fathername='')
 
 
 def delete_face(id):
-    conn = psycopg2.connect(dbname='FRDB', user='postgres', password='qwerty', host='localhost')
+    conn = psycopg2.connect(dbname=DBNAME, user=USER, password=PASSWORD, host='localhost')
     cursor = conn.cursor()
 
     if id:
@@ -141,7 +145,7 @@ def delete_face(id):
     conn.close()
 
 def delete_event(id):
-    conn = psycopg2.connect(dbname='FRDB', user='postgres', password='qwerty', host='localhost')
+    conn = psycopg2.connect(dbname=DBNAME, user=USER, password=PASSWORD, host='localhost')
     cursor = conn.cursor()
 
     if id:
@@ -153,7 +157,7 @@ def delete_event(id):
 
 
 def insert_new_event(camera_id, face_id):
-    conn = psycopg2.connect(dbname='FRDB', user='postgres', password='qwerty', host='localhost')
+    conn = psycopg2.connect(dbname=DBNAME, user=USER, password=PASSWORD, host='localhost')
     cursor = conn.cursor()
 
     cursor.execute('''INSERT INTO events (camera_id, face_id) 
@@ -166,7 +170,7 @@ def insert_new_event(camera_id, face_id):
 
 def update_last_detection(id, last_detection):
     # подключение к БД
-    conn = psycopg2.connect(dbname='FRDB', user='postgres', password='qwerty', host='localhost')
+    conn = psycopg2.connect(dbname=DBNAME, user=USER, password=PASSWORD, host='localhost')
     cursor = conn.cursor()
 
     query = """ UPDATE faces
