@@ -22,7 +22,6 @@ var app = new Vue({
                 document.getElementById('faceEditor').style.display = 'none';
 
                 $('#upload-photo').attr('src', '../static/img/avatar.png');
-                document.getElementById('uploadPhotoBtn').style.display = 'block';
                 app.name = null;
                 app.lastname = null;
                 app.fathername = null;
