@@ -23,9 +23,9 @@ FRAME_HEIGHT = 120
 FRAME_WIDTH = 160
 FRAME_FPS = 50
 TIME_DETECTION = 0.2 # обновлять время последней детекции каждые N мин
-TIME_DETECTION_UNKNOWN = 0.2
+TIME_DETECTION_UNKNOWN = 0.05
 
-def StartWebServer(qI, port=5000):
+def StartWebServer(qI, qChangeFace, port=5000):
     app = Flask(__name__)
     # app.config.from_object(__name__)
 
@@ -86,7 +86,13 @@ def StartWebServer(qI, port=5000):
             photofile.save(full_path)
             added_id = db_helper.insert_new_face(False, photo_path, name, lastname, fathername)
             if added_id:
-                print('ADDED')
+                image = face_recognition.load_image_file(full_path)
+                encoding = face_recognition.face_encodings(image)
+                if len(encoding) > 0:
+                    face_encoding = encoding[0]
+                    qChangeFace.put({'id': added_id, 'encoding': face_encoding, 'for_adding': True})
+                    print('ADDED   ' + str(added_id))
+
             return redirect("/faces", code=302)
         else:
             return 'ERROR'
@@ -96,6 +102,7 @@ def StartWebServer(qI, port=5000):
         data = request.json
         id = data['face_id']
         db_helper.delete_face(id)
+        qChangeFace.put({'id': id, 'encoding': '', 'for_adding': False})
         return str(True)
 
     @app.route("/stream")
@@ -146,44 +153,47 @@ def CheckFace(cap, qI, camera, count_frame):
     cv2.destroyAllWindows()
 
 
-def FullRecognizedFace(qI, qO):
-    # faces = db_helper.get_faces(None, False)
+def FullRecognizedFace(qI, qO, qChangeFace):
+    faces = db_helper.get_faces(None, False)
     LAST_TIME_DETECTION_UNKNOWN = datetime.datetime.now()
 
     # Загружаем все знакомые лица
-    # known_face_encodings = []
-    # known_face_ids = []
-    # directory = os.getcwd() + '/'
+    known_face_encodings = []
+    known_face_ids = []
+    directory = os.getcwd() + '/'
 
-    # for face in faces:
-    #     print(face['photo_path'])
-    #     path_to_image = directory + face['photo_path']
-    #     image = face_recognition.load_image_file(path_to_image)
-    #     encoding = face_recognition.face_encodings(image)
-    #     if len(encoding) > 0:
-    #         face_encoding = encoding[0]
-    #         known_face_encodings.append(face_encoding)
-    #         known_face_ids.append(face['face_id'])
+    for face in faces:
+        print(face['photo_path'])
+        path_to_image = directory + face['photo_path']
+        image = face_recognition.load_image_file(path_to_image)
+        encoding = face_recognition.face_encodings(image)
+        if len(encoding) > 0:
+            face_encoding = encoding[0]
+            known_face_encodings.append(face_encoding)
+            known_face_ids.append(face['face_id'])
 
     i = 0
     while True:
         data_frame = qI.get()
 
-        # Загружаем все знакомые лица
-        faces = db_helper.get_faces(None, False)
-        known_face_encodings = []
-        known_face_ids = []
-        directory = os.getcwd() + '/'
+        # если было добавлено/удалено лицо
+        if not qChangeFace.empty():
+            new_face_obj = qChangeFace.get()
+            ID = new_face_obj.get('id')
+            if new_face_obj.get('for_adding'):
+                known_face_encodings.append(new_face_obj.get('encoding'))
+                known_face_ids.append(ID)
+            else:
+                print('for delete  ' + str(ID))
+                index = -1
+                for ind in range(len(known_face_ids)):
+                    if known_face_ids[ind] == ID:
+                        index = ind
 
-        for face in faces:
-            print(face['photo_path'])
-            path_to_image = directory + face['photo_path']
-            image = face_recognition.load_image_file(path_to_image)
-            encoding = face_recognition.face_encodings(image)
-            if len(encoding) > 0:
-                face_encoding = encoding[0]
-                known_face_encodings.append(face_encoding)
-                known_face_ids.append(face['face_id'])
+                if index > 0:
+                    del known_face_ids[index]
+                    del known_face_encodings[index]
+
 
         camera_name = data_frame.get('camera_name')
         camera_id = data_frame.get('camera_id')
@@ -276,6 +286,7 @@ def FullRecognizedFace(qI, qO):
 
 queueImg = multiprocessing.Queue()
 queueToSend = multiprocessing.Queue()
+queueChangeFace = multiprocessing.Queue() # для добавления новых лиц
 
 detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -322,8 +333,8 @@ cameras = db_helper.get_cameras()
 # print(prc1.pid)
 
 # запуск сервера
-prc2 = multiprocessing.Process(target=StartWebServer, args=(queueToSend,))
+prc2 = multiprocessing.Process(target=StartWebServer, args=(queueToSend,queueChangeFace,))
 prc2.start()
 print(prc2.pid)
 
-# FullRecognizedFace(queueImg, queueToSend)
+# FullRecognizedFace(queueImg, queueToSend, queueChangeFace)

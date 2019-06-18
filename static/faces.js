@@ -2,7 +2,13 @@ var app = new Vue({
     el: '#app',
     delimiters: ['[[', ']]'],
     data: {
-        items: []
+        items: [],
+        lastname: null,
+        name: null,
+        fathername: null,
+        isLastnameEmpty: false,
+        isNameEmpty: false,
+        isPhotoEmpty: false
     },
     filters: {
     },
@@ -17,10 +23,12 @@ var app = new Vue({
 
                 $('#upload-photo').attr('src', '../static/img/avatar.png');
                 document.getElementById('uploadPhotoBtn').style.display = 'block';
-                // document.getElementById('saveBtn').style.display = 'none';
-                document.getElementById('input-lastname').value = '';
-                document.getElementById('input-name').value = '';
-                document.getElementById('input-fathername').value = '';
+                app.name = null;
+                app.lastname = null;
+                app.fathername = null;
+                app.isLastnameEmpty = false;
+                app.isNameEmpty = false;
+                app.isPhotoEmpty = false;
             }
         },
         uploadPhoto: function(event) {
@@ -35,15 +43,24 @@ var app = new Vue({
                         $('#upload-photo').attr('src', e.target.result);
                     });
                     reader.readAsDataURL(file);
-                    // document.getElementById('uploadPhotoBtn').style.display = 'none';
-                    // document.getElementById('saveBtn').style.display = 'block';
                 }
             }
 
             file_input.click();
         },
-        save: function(event) {
+        checkForm: function(event) {
+            var isAvatar = $('#upload-photo').attr('src') == '../static/img/avatar.png';
+            app.isNameEmpty = false;
+            app.isLastnameEmpty = false;
+            app.isPhotoEmpty = false;
 
+            if (!app.name || !app.lastname || isAvatar) {
+                app.isNameEmpty = !app.name;
+                app.isLastnameEmpty = !app.lastname;
+                app.isPhotoEmpty = isAvatar;
+
+                event.preventDefault();
+            }
         },
         deleteFaceById: function(data) {
             var ids = data && data[0];

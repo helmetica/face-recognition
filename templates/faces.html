@@ -37,7 +37,7 @@
 				<button type="button" class="page-top-btn" v-on:click="toogleFaceEditor">Добавить</button>
 				<div id="faceEditor">
 					<div class="faceEditor-content">
-						<form action="/save_face" method="POST" enctype="multipart/form-data" style="height: 100%;">
+						<form action="/save_face" method="POST" enctype="multipart/form-data" @submit="checkForm" style="height: 100%;">
 							<div class="faceEditor-header">
 								<div class="faceEditor-caption">Добавление лица для распознавания</div>
 								<div class="faceEditor-close" v-on:click="toogleFaceEditor">x</div>
@@ -45,6 +45,7 @@
 							<div class="faceEditor-body">
 								<div class="faceEditor-body-photoColumn">
 									<img src="../static/img/avatar.png" id="upload-photo" alt="image" />
+									<p v-if="isPhotoEmpty" class="photo-empty-error">Необходимо загрузить фотографию!</p>
 									<button id="uploadPhotoBtn" type="button" class="faceEditor-upload" v-on:click="uploadPhoto">Выбрать файл</button>
 									<input id="file-input" type="file" name="photo" style="display: none;" />
 								</div>
@@ -52,18 +53,18 @@
 									<div>
 										<div class="faceEditor-body-infoColumn-row">
 											<div class="faceEditor-body-infoColumn-row-title">Фамилия</div>
-											<input id="input-lastname" type="text" name="lastname">
+											<input id="input-lastname" type="text" name="lastname" v-model="lastname" :class="[isLastnameEmpty ? 'input-lastname-error' : '']">
 										</div>
 										<div class="faceEditor-body-infoColumn-row">
 											<div class="faceEditor-body-infoColumn-row-title">Имя</div>
-											<input id="input-name" type="text" name="name">
+											<input id="input-name" type="text" name="name" v-model="name" :class="[isNameEmpty ? 'input-name-error' : '']">
 										</div>
 										<div class="faceEditor-body-infoColumn-row">
 											<div class="faceEditor-body-infoColumn-row-title">Отчество</div>
-											<input id="input-fathername" type="text" name="fathername">
+											<input id="input-fathername" type="text" name="fathername" v-model="fathername">
 										</div>
 									</div>
-									<button id="saveBtn" type="submit" class="page-top-btn" v-on:click="save">Сохранить</button>
+									<button id="saveBtn" type="submit" class="page-top-btn">Сохранить</button>
 								</div>
 							</div>
 						</form>

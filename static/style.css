@@ -321,6 +321,7 @@ body {
     background: unset;
     text-decoration: underline;
     color: #31546f;
+    cursor: pointer;
 }
 
 .faceEditor-upload:focus {
@@ -335,4 +336,13 @@ body {
     width: 200px;
     height: 200px;
     object-fit: cover;
+}
+
+.input-lastname-error, .input-name-error {
+    background: #ff000054;
+}
+
+.photo-empty-error {
+    font-size: 12px;
+    color: red;
 }
