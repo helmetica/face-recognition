@@ -34,27 +34,62 @@
 		</div>
 		<div id="page">
 			<div class="page-top">
-				<button type="button" class="page-top-btn" v-on:click="openFaceEditor">Добавить</button>
+				<button type="button" class="page-top-btn" v-on:click="toogleFaceEditor">Добавить</button>
 				<div id="faceEditor">
-					<span>here</span>
-					<button type="button" class="page-top-btn" v-on:click="uploadPhoto">Загрузить фото</button>
+					<div class="faceEditor-content">
+						<form action="/save_face" method="POST" enctype="multipart/form-data" @submit="checkForm" style="height: 100%;">
+							<div class="faceEditor-header">
+								<div class="faceEditor-caption">Добавление лица для распознавания</div>
+								<div class="faceEditor-close" v-on:click="toogleFaceEditor">x</div>
+							</div>
+							<div class="faceEditor-body">
+								<div class="faceEditor-body-photoColumn">
+									<img src="../static/img/avatar.png" id="upload-photo" alt="image" />
+									<p v-if="isPhotoEmpty" class="photo-empty-error">Необходимо загрузить фотографию!</p>
+									<button id="uploadPhotoBtn" type="button" class="faceEditor-upload" v-on:click="uploadPhoto">Выбрать файл</button>
+									<input id="file-input" type="file" name="photo" style="display: none;" />
+								</div>
+								<div class="faceEditor-body-infoColumn">
+									<div>
+										<div class="faceEditor-body-infoColumn-row">
+											<div class="faceEditor-body-infoColumn-row-title">Фамилия</div>
+											<input id="input-lastname" type="text" name="lastname" v-model="lastname" :class="[isLastnameEmpty ? 'input-lastname-error' : '']">
+										</div>
+										<div class="faceEditor-body-infoColumn-row">
+											<div class="faceEditor-body-infoColumn-row-title">Имя</div>
+											<input id="input-name" type="text" name="name" v-model="name" :class="[isNameEmpty ? 'input-name-error' : '']">
+										</div>
+										<div class="faceEditor-body-infoColumn-row">
+											<div class="faceEditor-body-infoColumn-row-title">Отчество</div>
+											<input id="input-fathername" type="text" name="fathername" v-model="fathername">
+										</div>
+									</div>
+									<button id="saveBtn" type="submit" class="page-top-btn">Сохранить</button>
+								</div>
+							</div>
+						</form>
+					</div>
 				</div>
 			</div>
 			<div class="page-body">
 				<div class="faces-table">
 					<div v-for="item in items" class="face-info">
-                        <img v-bind:src="item.photo_path" class="face-info-photo">
-                        <div class="face-info-name">
-                            <div>[[ item.lastname ]]</div>
-                            <div>[[ item.name ]]</div>
-                            <div>[[ item.fathername ]]</div>
-                        </div>
+						<div class="face-info-content">
+							<img v-bind:src="item.photo_path" class="face-info-photo">
+							<div class="face-info-name">
+								<div>[[ item.lastname ]]</div>
+								<div>[[ item.name ]]</div>
+								<div>[[ item.fathername ]]</div>
+							</div>
+						</div>
+						<div title="Удалить" class="face-info-delete" v-on:click="deleteFaceById([[ item.face_id ]])">Удалить</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <script type="text/javascript" src="../static/vue.js"></script>
 <script type="text/javascript" src="../static/faces.js"></script>
 
